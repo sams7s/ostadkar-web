@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>خدمات ساختمانی استاد کار آنلاین</title>
+    <style>
+        :root {
+            --primary: #2d3436;
+            --accent: #0984e3; /* آبیِ اعتماد */
+            --orange-btn: linear-gradient(135deg, #ff9f43 0%, #ff6b6b 100%);
+            --bg-gradient: linear-gradient(135deg, #eef7ff 0%, #dff9fb 100%);
+            --glass: rgba(255, 255, 255, 0.85);
+            --text-muted: #636e72;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Tahoma', 'Segoe UI', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            margin: 0;
+            color: var(--primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* هدر شیشه‌ای و حرفه‌ای */
+        header {
+            width: 100%;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(15px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            height: 80px;
+        }
+
+        .logo-box img {
+            max-height: 55px;
+            width: auto;
+            display: block;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
+        }
+
+        /* دکمه بازگشت نارنجی اختصاصی مهراب */
+        .back-nav {
+            cursor: pointer;
+            display: none; /* پیش‌فرض پنهان */
+            background: var(--orange-btn);
+            color: white !important;
+            padding: 8px 22px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 800;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+            align-items: center;
+            gap: 8px;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .back-nav:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+            filter: brightness(1.1);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 420px;
+            margin: 30px auto;
+        }
+
+        /* انیمیشن مراحل */
+        .step { display: none; animation: slideUp 0.5s ease forwards; }
+        .active { display: block; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero { text-align: center; margin-bottom: 30px; }
+        .hero h1 { font-size: 1.5rem; margin-bottom: 10px; color: var(--accent); }
+        .hero p { font-size: 0.9rem; color: var(--text-muted); }
+
+        /* کارت‌های انتخاب اصلی */
+        .main-card {
+            background: var(--glass);
+            border: 1px solid rgba(255,255,255,0.5);
+            padding: 30px 20px;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.4s;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+        }
+
+        .main-card:hover {
+            transform: translateY(-8px);
+            background: #fff;
+            box-shadow: 0 15px 35px rgba(9, 132, 227, 0.15);
+            border-color: var(--accent);
+        }
+
+        .main-card h3 { margin: 15px 0 5px 0; font-size: 1.2rem; }
+
+        /* لیست تخصص‌ها */
+        .job-grid { display: grid; gap: 12px; margin: 20px 0; }
+        
+        .job-item {
+            background: white;
+            border: 2px solid transparent;
+            padding: 18px;
+            border-radius: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        .job-item:hover { border-color: #ddd; }
+        .job-item.selected {
+            border-color: var(--accent);
+            background: #f0f7ff;
+            color: var(--accent);
+            transform: scale(1.02);
+        }
+
+        .btn-confirm {
+            background: var(--accent);
+            color: white;
+            width: 100%;
+            padding: 16px;
+            border-radius: 15px;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            box-shadow: 0 5px 15px rgba(9, 132, 227, 0.3);
+            transition: 0.3s;
+        }
+
+        .btn-confirm:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
+
+        /* باکس پیام نهایی */
+        .info-box {
+            background: #fff;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            border-top: 5px solid var(--accent);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        /* دکمه‌های شبکه‌های اجتماعی */
+        .social-grid { display: grid; gap: 12px; margin-top: 25px; }
+        .social-link {
+            padding: 15px;
+            border-radius: 15px;
+            text-decoration: none;
+            color: #4960A8;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: 0.3s;
+        }
+        .social-link:hover { opacity: 0.9; transform: scale(1.02); }
+
+        .rubika { background: linear-gradient(45deg, #4960A8, #4960A8); }
+        .bale { background: linear-gradient(45deg, #2ecc71, #55efc4); }
+        .eitaa { background: linear-gradient(45deg, #e67e22, #fab1a0); }
+        .splus { background: linear-gradient(45deg, #2980b9, #81ecec); }
+
+        footer { margin: 40px 0 20px 0; font-size: 12px; color: #999; }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <button class="back-nav" id="backBtn" onclick="goBack()">برگشت ←</button>
+    <div class="logo-box">
+        <img src="logo.png" alt="Ostad Kar Online">
+    </div>
+    <div style="width: 80px;" id="spacer"></div>
+</header>
+
+<div class="container">
+    
+    <!-- مرحله ۱: انتخاب نقش -->
+    <div id="step1" class="step active">
+        <div class="hero">
+            <h1>استادکار آنلاین</h1>
+            <p>خدمات هوشمند ساختمانی در سیرجان</p>
+        </div>
+        <div onclick="initFlow('specialist')" class="main-card">
+            <div style="font-size: 45px;">🛠️</div>
+            <h3>ثبت‌نام متخصص</h3>
+            <p style="font-size: 12px; color: #888;">می‌خواهم به عنوان استادکار کار دریافت کنم</p>
+        </div>
+        <div onclick="initFlow('client')" class="main-card">
+            <div style="font-size: 45px;">🏠</div>
+            <h3>درخواست خدمات</h3>
+            <p style="font-size: 12px; color: #888;">به دنبال نیروی ماهر برای پروژه خود هستم</p>
+        </div>
+    </div>
+
+    <!-- مرحله ۲: انتخاب تخصص -->
+    <div id="step2" class="step">
+        <h2 id="step2Title" style="text-align: center;">انتخاب تخصص</h2>
+        <div id="jobList" class="job-grid">
+            <!-- مشاغل توسط جاوااسکریپت رندر می‌شوند -->
+        </div>
+        <button id="confirmBtn" class="btn-confirm" onclick="goToConfirmation()" disabled>تایید و ادامه</button>
+    </div>
+
+    <!-- مرحله ۳: تایید و پیام محترمانه -->
+    <div id="step3" class="step">
+        <div class="info-box">
+            <div id="finalIcon" style="font-size: 50px; margin-bottom: 15px;">🙏</div>
+            <h3 id="finalTitle">سپاس از اعتماد شما</h3>
+            <p id="finalMsg" style="line-height: 1.6; color: #555;"></p>
+            <button class="btn-confirm" onclick="showMessengers()">ارسال پیام به ادمین</button>
+        </div>
+    </div>
+
+    <!-- مرحله ۴: راه‌های ارتباطی -->
+    <div id="step4" class="step">
+        <h2 style="text-align: center;">ارسال درخواست به ادمین</h2>
+        <p style="text-align: center; font-size: 0.9rem; color: #666;">لطفاً از طریق یکی از پیام‌رسان‌های زیر، تخصص‌های انتخابی خود را به ادمین اطلاع دهید:</p>
+        <div class="social-grid">
+         <!-- لینک‌های ارتباطیِ اختصاصیِ مهندس مهراب -->
+<a href="sms:+989134451502" class="social-link sms">تماس از طریق پیامک</a>
+
+<a href="https://ble.ir/shahidi13" target="_blank" rel="noopener noreferrer" class="social-link bale">پیام در بله</a>
+
+<a href="https://eitaa.com/AmirMehrab88" target="_blank" rel="noopener noreferrer" class="social-link eitaa">پیام در ایتا</a>
+
+<a href="https://splus.ir/mehrabwww1" target="_blank" rel="noopener noreferrer" class="social-link splus">پیام در سروش پلاس</a>
+  
+        </div>
+    </div>
+
+</div>
+
+<footer></footer>
+<script>
+    let userData = {
+        role: '',
+        selectedJobs: [],
+        history: [1]
+    };
+
+    const jobs = ["برق‌کار", "گچ‌کار", "بنا", "کارگر ساده", "لوله‌کش", "نقاش ساختمان"];
+
+    function initFlow(role) {
+        userData.role = role;
+        userData.selectedJobs = [];
+        renderJobs();
+        navigateTo(2);
+    }
+
+    function renderJobs() {
+        const container = document.getElementById('jobList');
+        container.innerHTML = '';
+        document.getElementById('step2Title').innerText = userData.role === 'specialist' ? "تخصص شما چیست؟" : "به چه تخصص‌هایی نیاز دارید؟";
+        
+        jobs.forEach(job => {
+            const div = document.createElement('div');
+            div.className = 'job-item';
+            div.innerHTML = `${job} <span>+</span>`;
+            div.onclick = () => toggleJob(div, job);
+            container.appendChild(div);
+        });
+        checkValidity();
+    }
+
+    function toggleJob(el, job) {
+        if (userData.role === 'specialist') {
+            // متخصص فقط یک شغل انتخاب می‌کند
+            document.querySelectorAll('.job-item').forEach(i => i.classList.remove('selected'));
+            el.classList.add('selected');
+            userData.selectedJobs = [job];
+        } else {
+            // مشتری می‌تواند چند شغل انتخاب کند
+            el.classList.toggle('selected');
+            if (el.classList.contains('selected')) {
+                userData.selectedJobs.push(job);
+            } else {
+                userData.selectedJobs = userData.selectedJobs.filter(j => j !== job);
+            }
+        }
+        checkValidity();
+    }
+
+    function checkValidity() {
+        document.getElementById('confirmBtn').disabled = userData.selectedJobs.length === 0;
+    }
+
+    function goToConfirmation() {
+        const title = document.getElementById('finalTitle');
+        const msg = document.getElementById('finalMsg');
+        const icon = document.getElementById('finalIcon');
+
+        if (userData.role === 'specialist') {
+            icon.innerText = "🛠️";
+            title.innerText = "خوش‌آمدید استادکار عزیز";
+            msg.innerText = `درخواست همکاری شما برای تخصص "${userData.selectedJobs[0]}" ثبت شد. لطفاً جهت تکمیل رزومه و شروع همکاری، به ادمین پیام بدهید.`;
+        } else {
+            icon.innerText = "🙏";
+            title.innerText = "درخواست شما دریافت شد";
+            msg.innerText = `برای اعزام سریع نیروهای متخصص در زمینه‌های (${userData.selectedJobs.join('، ')})، کافیست لیست انتخابی را برای ادمین ارسال کنید.`;
+        }
+        navigateTo(3);
+    }
+
+    function showMessengers() {
+        navigateTo(4);
+    }
+
+    function navigateTo(step) {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step' + step).classList.add('active');
+        
+        if (step > 1) {
+            document.getElementById('backBtn').style.display = 'flex';
+            document.getElementById('spacer').style.display = 'none';
+        } else {
+            document.getElementById('backBtn').style.display = 'none';
+            document.getElementById('spacer').style.display = 'block';
+        }
+        
+        if (userData.history[userData.history.length - 1] !== step) {
+            userData.history.push(step);
+        }
+    }
+
+    function goBack() {
+        if (userData.history.length > 1) {
+            userData.history.pop();
+            const prevStep = userData.history[userData.history.length - 1];
+            navigateTo(prevStep);
+        }
+    }
+</script>
+
+</body>
+</html>
